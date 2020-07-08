@@ -6,6 +6,7 @@ ENV BAMBOO_USER bamboo
 ENV BAMBOO_GROUP bamboo
 
 ENV SSO_ENABLED false
+ENV BROKER_CLIENT_URI tcp://localhost:54663
 
 ENV BAMBOO_USER_HOME /home/${BAMBOO_USER}
 ENV BAMBOO_HOME /var/atlassian/application-data/bamboo
@@ -32,6 +33,7 @@ RUN set -x && \
      libtcnative-1 \
      maven \
      python3 python3-jinja2 \
+     xmlstarlet \
      && \
      # create symlink to maven to automate capability detection
      ln -s /usr/share/maven /usr/share/maven3 && \

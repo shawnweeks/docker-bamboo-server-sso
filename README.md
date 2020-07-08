@@ -6,6 +6,12 @@ This is taken from Atlassians Bamboo Docker repo and customized to support our n
 docker build -t bamboo-server-sso --build-arg BAMBOO_VERSION=7.0.4 .
 ```
 
+## Remote Agent Settings
+
+* `BROKER_CLIENT_URI` (default: tcp://localhost:54663)
+
+   Sets the Broker client URI that remote bamboo agents will use.
+
 ## SSO Settings
 
 * `SSO_ENABLED` (default: false)
