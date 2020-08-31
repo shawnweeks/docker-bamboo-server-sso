@@ -6,6 +6,11 @@ docker build \
     .
 ```
 
+### Push to Registry
+```shell
+docker push registry.cloudbrocktec.com/atlassian-suite/docker-bamboo-server-sso
+```
+
 ### Simple Run Command
 ```shell
 docker run --init -it --rm \
