@@ -26,7 +26,9 @@ ARG DOWNLOAD_URL=https://www.atlassian.com/software/bamboo/downloads/binary/atla
 
 RUN yum install -y java-1.8.0-openjdk-devel python3 python3-jinja2
 
-COPY [ "entrypoint.sh", "/tmp/scripts/" ]
+COPY [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "/tmp/scripts/" ]
+
+COPY [ "templates/*.j2", "/opt/jinja-templates/" ]
 
 RUN mkdir -p ${BAMBOO_HOME} && \
     mkdir -p ${BAMBOO_INSTALL_DIR} && \
@@ -37,7 +39,7 @@ RUN mkdir -p ${BAMBOO_HOME} && \
     chown -R "${BAMBOO_USER}:${BAMBOO_GROUP}" "${BAMBOO_INSTALL_DIR}" && \
     cp /tmp/scripts/* ${BAMBOO_HOME} && \
     chown -R "${BAMBOO_USER}:${BAMBOO_GROUP}" "${BAMBOO_HOME}" && \
-    chmod 755 ${BAMBOO_HOME}/*.sh
+    chmod 755 ${BAMBOO_HOME}/entrypoint.*
 
 ENV BAMBOO_JMS_CONNECTION_PORT=54663
 EXPOSE 8085
@@ -45,5 +47,6 @@ EXPOSE $BAMBOO_JMS_CONNECTION_PORT
 
 VOLUME ${BAMBOO_HOME}
 USER ${BAMBOO_USER}
+ENV PATH=${PATH}:${BAMBOO_HOME}
 WORKDIR ${BAMBOO_HOME}
-ENTRYPOINT [ "./entrypoint.sh" ]
+ENTRYPOINT [ "entrypoint.sh" ]
