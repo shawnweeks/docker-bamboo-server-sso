@@ -24,7 +24,8 @@ ENV BAMBOO_INSTALL_DIR /opt/atlassian/bamboo
 ARG BAMBOO_VERSION
 ARG DOWNLOAD_URL=https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz
 
-RUN yum install -y java-1.8.0-openjdk-devel python3 python3-jinja2
+RUN yum install -y java-1.8.0-openjdk-devel python3 python3-jinja2 && \
+    yum clean all
 
 COPY [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "/tmp/scripts/" ]
 
@@ -37,15 +38,15 @@ RUN mkdir -p ${BAMBOO_HOME} && \
     curl --silent -L ${DOWNLOAD_URL} | tar -xz --strip-components=1 -C "$BAMBOO_INSTALL_DIR" && \
     echo "bamboo.home=${BAMBOO_HOME}" > $BAMBOO_INSTALL_DIR/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties && \
     chown -R "${BAMBOO_USER}:${BAMBOO_GROUP}" "${BAMBOO_INSTALL_DIR}" && \
-    cp /tmp/scripts/* ${BAMBOO_HOME} && \
+    cp /tmp/scripts/* ${BAMBOO_INSTALL_DIR}/bin && \
     chown -R "${BAMBOO_USER}:${BAMBOO_GROUP}" "${BAMBOO_HOME}" && \
-    chmod 755 ${BAMBOO_HOME}/entrypoint.*
+    chmod 755 ${BAMBOO_INSTALL_DIR}/bin/entrypoint.*
 
 EXPOSE 8085
 EXPOSE 54663
 
 VOLUME ${BAMBOO_HOME}
 USER ${BAMBOO_USER}
-ENV PATH=${PATH}:${BAMBOO_HOME}
+ENV PATH=${PATH}:${BAMBOO_INSTALL_DIR}/bin
 WORKDIR ${BAMBOO_HOME}
 ENTRYPOINT [ "entrypoint.sh" ]

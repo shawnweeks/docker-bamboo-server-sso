@@ -12,6 +12,18 @@ CATALINA_OPTS="${CATALINA_OPTS} -Dbamboo.setup.rss.in.docker=false"
 export JAVA_OPTS="${JAVA_OPTS}"
 export CATALINA_OPTS="${CATALINA_OPTS}"
 
-entrypoint.py
+startup() {
+    echo Starting Bamboo Server
+    ${BAMBOO_INSTALL_DIR}/bin/start-bamboo.sh
+    sleep 15
+    tail -n +1 -F ${BAMBOO_HOME}/logs/* ${BAMBOO_INSTALL_DIR}/logs/*
+}
 
-${BAMBOO_INSTALL_DIR}/bin/start-bamboo.sh -fg
+shutdown() {
+    echo Stopping Bamboo Server
+    ${BAMBOO_INSTALL_DIR}/bin/stop-bamboo.sh
+}
+
+trap "shutdown" INT
+entrypoint.py
+startup
