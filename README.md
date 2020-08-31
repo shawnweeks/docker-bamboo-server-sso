@@ -15,6 +15,7 @@ docker push registry.cloudbrocktec.com/atlassian-suite/docker-bamboo-server-sso
 ```shell
 docker run --init -it --rm \
     --name bamboo  \
+    -v bamboo-data:/var/atlassian/application-data/bamboo \
     -p 8085:8085 \
     registry.cloudbrocktec.com/atlassian-suite/docker-bamboo-server-sso:7.1.1
 ```
