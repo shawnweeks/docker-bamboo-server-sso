@@ -1,14 +1,25 @@
+### Setup Environment
+```shell
+export BAMBOO_VERSION=7.1.1
+```
+
+### Download Files
+```shell
+wget https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz
+```
+
 ### Build Command
 ```shell
 docker build \
-    -t registry.cloudbrocktec.com/atlassian-suite/docker-bamboo-server-sso:7.1.1 \
+    -t ${REGISTRY}/atlassian-suite/bamboo-server-sso:7.1.1 \
+    --build-arg BASE_REGISTRY=${REGISTRY} \
     --build-arg BAMBOO_VERSION=7.1.1 \
     .
 ```
 
 ### Push to Registry
 ```shell
-docker push registry.cloudbrocktec.com/atlassian-suite/docker-bamboo-server-sso
+docker push ${REGISTRY}/atlassian-suite/bamboo-server-sso
 ```
 
 ### Simple Run Command
@@ -17,7 +28,7 @@ docker run --init -it --rm \
     --name bamboo  \
     -v bamboo-data:/var/atlassian/application-data/bamboo \
     -p 8085:8085 \
-    registry.cloudbrocktec.com/atlassian-suite/docker-bamboo-server-sso:7.1.1
+    ${REGISTRY}/atlassian-suite/bamboo-server-sso:7.1.1
 ```
 
 ### SSO Run Command
@@ -32,7 +43,7 @@ docker run --init -it --rm \
     -e ATL_TOMCAT_SECURE='true' \
     -e ATL_PROXY_NAME='cloudbrocktec.com' \
     -e ATL_PROXY_PORT='443' \
-    registry.cloudbrocktec.com/atlassian-suite/docker-bamboo-server-sso:7.1.1
+    ${REGISTRY}/atlassian-suite/bamboo-server-sso:7.1.1
 
 # Run second after you've setup the crowd connection
 docker run --init -it --rm \
@@ -49,7 +60,7 @@ docker run --init -it --rm \
     -e CROWD_APP_NAME='bamboo' \
     -e CROWD_APP_PASS='bamboo' \
     -e CROWD_BASE_URL='https://cloudbrocktec.com/crowd' \
-    registry.cloudbrocktec.com/atlassian-suite/docker-bamboo-server-sso:7.1.1
+    ${REGISTRY}/atlassian-suite/bamboo-server-sso:7.1.1
 ```
 
 ### Environment Variables

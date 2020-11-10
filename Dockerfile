@@ -6,10 +6,25 @@
 # Bitbucket     2003
 # Crowd         2004
 # Bamboo        2005
+ARG BASE_REGISTRY
+ARG BASE_IMAGE=redhat/ubi/ubi7
+ARG BASE_TAG=7.9
 
-ARG BASE_REGISTRY=registry.cloudbrocktec.com
-ARG BASE_IMAGE=redhat/ubi/ubi8
-ARG BASE_TAG=8.2
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as build
+
+ARG BAMBOO_VERSION
+ARG BAMBOO_PACKAGE=atlassian-bamboo-${BAMBOO_VERSION}.tar.gz
+
+COPY [ "${BAMBOO_PACKAGE}", "/tmp/" ]
+
+RUN mkdir -p /tmp/atl_pkg && \
+    tar -xf /tmp/${BAMBOO_PACKAGE} -C "/tmp/atl_pkg" --strip-components=1
+
+
+###############################################################################
+ARG BASE_REGISTRY
+ARG BASE_IMAGE=redhat/ubi/ubi7
+ARG BASE_TAG=7.9
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG}
 
@@ -18,35 +33,32 @@ ENV BAMBOO_GROUP bamboo
 ENV BAMBOO_UID 2005
 ENV BAMBOO_GID 2005
 
-ENV BAMBOO_HOME /var/atlassian/application-data/bamboo
-ENV BAMBOO_INSTALL_DIR /opt/atlassian/bamboo
+ENV BAMBOO_HOME /var/atlassian/application-data/bitbucket
+ENV BAMBOO_INSTALL_DIR /opt/atlassian/bitbucket
 
-ARG BAMBOO_VERSION
-ARG DOWNLOAD_URL=https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz
-
-RUN yum install -y java-1.8.0-openjdk-devel python3 python3-jinja2 && \
-    yum clean all
-
-COPY [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "/tmp/scripts/" ]
-
-COPY [ "templates/*.j2", "/opt/jinja-templates/" ]
-
-RUN mkdir -p ${BAMBOO_HOME} && \
+RUN yum install -y java-11-openjdk-devel python2 python2-jinja2 && \
+    yum clean all && \    
+    mkdir -p ${BAMBOO_HOME} && \
     mkdir -p ${BAMBOO_INSTALL_DIR} && \
     groupadd -r -g ${BAMBOO_GID} ${BAMBOO_GROUP} && \
     useradd -r -u ${BAMBOO_UID} -g ${BAMBOO_GROUP} -M -d ${BAMBOO_HOME} ${BAMBOO_USER} && \
-    curl --silent -L ${DOWNLOAD_URL} | tar -xz --strip-components=1 -C "$BAMBOO_INSTALL_DIR" && \
-    echo "bamboo.home=${BAMBOO_HOME}" > $BAMBOO_INSTALL_DIR/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties && \
-    chown -R "${BAMBOO_USER}:${BAMBOO_GROUP}" "${BAMBOO_INSTALL_DIR}" && \
-    cp /tmp/scripts/* ${BAMBOO_INSTALL_DIR}/bin && \
-    chown -R "${BAMBOO_USER}:${BAMBOO_GROUP}" "${BAMBOO_HOME}" && \
-    chmod 755 ${BAMBOO_INSTALL_DIR}/bin/entrypoint.*
+    chown ${BAMBOO_USER}:${BAMBOO_GROUP} ${BAMBOO_HOME} && \
+    chown ${BAMBOO_USER}:${BAMBOO_GROUP} ${BAMBOO_INSTALL_DIR}
+
+COPY [ "templates/*.j2", "/opt/jinja-templates/" ]
+COPY --from=build --chown=${BAMBOO_USER}:${BAMBOO_GROUP} [ "/tmp/atl_pkg", "${BAMBOO_INSTALL_DIR}/" ]
+COPY --chown=${BAMBOO_USER}:${BAMBOO_GROUP} [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "${BAMBOO_INSTALL_DIR}/" ]
+
+
+RUN echo "bamboo.home=${BAMBOO_HOME}" > $BAMBOO_INSTALL_DIR/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties && \
+    chmod 755 ${BAMBOO_INSTALL_DIR}/entrypoint.*
 
 EXPOSE 8085
 EXPOSE 54663
 
 VOLUME ${BAMBOO_HOME}
 USER ${BAMBOO_USER}
-ENV PATH=${PATH}:${BAMBOO_INSTALL_DIR}/bin
+ENV JAVA_HOME=/usr/lib/jvm/java-11
+ENV PATH=${PATH}:${BAMBOO_INSTALL_DIR}
 WORKDIR ${BAMBOO_HOME}
 ENTRYPOINT [ "entrypoint.sh" ]
