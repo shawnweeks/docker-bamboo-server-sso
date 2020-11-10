@@ -33,10 +33,10 @@ ENV BAMBOO_GROUP bamboo
 ENV BAMBOO_UID 2005
 ENV BAMBOO_GID 2005
 
-ENV BAMBOO_HOME /var/atlassian/application-data/bitbucket
-ENV BAMBOO_INSTALL_DIR /opt/atlassian/bitbucket
+ENV BAMBOO_HOME /var/atlassian/application-data/bamboo
+ENV BAMBOO_INSTALL_DIR /opt/atlassian/bamboo
 
-RUN yum install -y java-11-openjdk-devel python2 python2-jinja2 && \
+RUN yum install -y java-1.8.0-openjdk-devel python2 python2-jinja2 && \
     yum clean all && \    
     mkdir -p ${BAMBOO_HOME} && \
     mkdir -p ${BAMBOO_INSTALL_DIR} && \
@@ -58,7 +58,7 @@ EXPOSE 54663
 
 VOLUME ${BAMBOO_HOME}
 USER ${BAMBOO_USER}
-ENV JAVA_HOME=/usr/lib/jvm/java-11
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0
 ENV PATH=${PATH}:${BAMBOO_INSTALL_DIR}
 WORKDIR ${BAMBOO_HOME}
 ENTRYPOINT [ "entrypoint.sh" ]
