@@ -12,37 +12,54 @@
 		
 	  var url = new URL(window.location.href);
 	  var osDestination = url.searchParams.get("os_destination");
-		
+	  var autoLogin = url.searchParams.get("auto_login");
+	  if (autoLogin === null || autoLogin === undefined) {
+	    autoLogin = "true";
+	  }
 	  osDestination = osDestination ? osDestination : "";
-	  window.location.replace(ssoUrl + '?redirectTo=' + encodeURIComponent('https://' + window.location.host + contextPath + osDestination));
+	  
+	  function login() {
+	    window.location.replace(ssoUrl + '?redirectTo=' + encodeURIComponent('https://' + window.location.host + contextPath + osDestination));
+	  }
+	  
+	  var loginLoopCheck = getCookie("loginLoopCheck");
+	  
+	  if (!loginLoopCheck) {
+	    setCookie("loginLoopCheck", "true", contextPath, 1 * 60 * 1000);
+	  } else {
+	    autoLogin = false;
+	  }
+	  
+	  if (autoLogin && autoLogin.toLowerCase() === "true") {
+		login();
+	  }
+	  
+	  function setCookie(name, value, path, lifeLength) {
+	    var expires = "";
+		var date = new Date();
+		date.setTime(date.getTime() + lifeLength);
+		expires = "; expires=" + date.toUTCString();
+		document.cookie = name + "=" + (value || "") + expires + "; path=" + path;
+	  }
+	  
+	  function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+		    c = c.substring(1, c.length);
+		  }
+          if (c.indexOf(nameEQ) == 0) {
+		    return c.substring(nameEQ.length, c.length);
+		  }
+        }
+        return null;
+      }
+	  
 	</script>{% raw %}
 </head>
 
 <body>
-
-[#if req.getParameter("os_destination")??]
-    [#assign destination = '${req.getParameter(\"os_destination\")}']
-[#elseif (session.getAttribute("ACEGI_SAVED_REQUEST_KEY"))??]
-    [#assign destination = '${session.getAttribute("ACEGI_SAVED_REQUEST_KEY").servletPath}?${session.getAttribute("ACEGI_SAVED_REQUEST_KEY").queryString!}']
-[#else]
-    [#assign destination = '/start.action']
-[/#if]
-
-<header>
-    [@ui.header pageKey="user.login.heading" /]
-</header>
-[@ww.form action="userlogin"
-              id="loginForm"
-              method="post"
-              submitLabelKey='user.login.button'
-              cancelUri='${req.contextPath}/forgotPassword.action'
-              cancelSubmitKey='user.login.description'
-]
-    [@ww.hidden name="os_destination" value=destination /]
-    [@ww.textfield labelKey='user.username' name="os_username" autofocus=true /]
-    [@ww.password labelKey='user.password' name="os_password" showPassword="true" /]
-    [@ww.checkbox id="os_cookie_id" labelKey='user.login.remember' name="os_cookie" accesskey="R" /]
-[#if elevatedSecurityRequired]
-    [@cp.captcha/]
-[/#if]
-[/@ww.form]{% endraw %}
+<a href="#" onclick="login()">Click Here to Login</a>
+{% endraw %}
