@@ -16,11 +16,11 @@ export CATALINA_OPTS="${CATALINA_OPTS}"
 shutdownCleanup() {
     # Currently it looks like Bamboo doesn't lock it's home
     # directory but I'm leaving this in here anyway.
-    # if [[ -f ${HOME}/.lock ]]
-    # then
-    #     echo "Cleaning Up Bamboo Lock"
-    #     rm ${HOME}/.lock
-    # fi
+    if [[ -f ${HOME}/.lock ]]
+    then
+        echo "Cleaning Up Bamboo Lock"
+        rm ${HOME}/.lock
+    fi
 }
 
 entrypoint.py
