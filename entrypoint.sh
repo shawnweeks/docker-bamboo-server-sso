@@ -13,5 +13,16 @@ CATALINA_OPTS="${CATALINA_OPTS} -Dbamboo.setup.rss.in.docker=false"
 export JAVA_OPTS="${JAVA_OPTS}"
 export CATALINA_OPTS="${CATALINA_OPTS}"
 
+shutdownCleanup() {
+    # Currently it looks like Bamboo doesn't lock it's home
+    # directory but I'm leaving this in here anyway.
+    # if [[ -f ${HOME}/.lock ]]
+    # then
+    #     echo "Cleaning Up Bamboo Lock"
+    #     rm ${HOME}/.lock
+    # fi
+}
+
 entrypoint.py
+trap "shutdownCleanup" INT
 ${BAMBOO_INSTALL_DIR}/bin/start-bamboo.sh -fg

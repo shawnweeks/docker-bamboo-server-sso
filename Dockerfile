@@ -7,8 +7,8 @@
 # Crowd         2004
 # Bamboo        2005
 ARG BASE_REGISTRY
-ARG BASE_IMAGE=redhat/ubi/ubi7
-ARG BASE_TAG=7.9
+ARG BASE_IMAGE=redhat/ubi/ubi8
+ARG BASE_TAG=8.3
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as build
 
@@ -22,10 +22,6 @@ RUN mkdir -p /tmp/atl_pkg && \
 
 
 ###############################################################################
-ARG BASE_REGISTRY
-ARG BASE_IMAGE=redhat/ubi/ubi7
-ARG BASE_TAG=7.9
-
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG}
 
 ENV BAMBOO_USER bamboo
@@ -42,8 +38,7 @@ RUN yum install -y java-1.8.0-openjdk-devel python2 python2-jinja2 && \
     mkdir -p ${BAMBOO_INSTALL_DIR} && \
     groupadd -r -g ${BAMBOO_GID} ${BAMBOO_GROUP} && \
     useradd -r -u ${BAMBOO_UID} -g ${BAMBOO_GROUP} -M -d ${BAMBOO_HOME} ${BAMBOO_USER} && \
-    chown ${BAMBOO_USER}:${BAMBOO_GROUP} ${BAMBOO_HOME} && \
-    chown ${BAMBOO_USER}:${BAMBOO_GROUP} ${BAMBOO_INSTALL_DIR}
+    chown ${BAMBOO_USER}:${BAMBOO_GROUP} ${BAMBOO_HOME}
 
 COPY [ "templates/*.j2", "/opt/jinja-templates/" ]
 COPY --from=build --chown=${BAMBOO_USER}:${BAMBOO_GROUP} [ "/tmp/atl_pkg", "${BAMBOO_INSTALL_DIR}/" ]

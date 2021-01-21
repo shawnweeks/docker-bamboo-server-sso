@@ -1,19 +1,16 @@
-### Setup Environment
-```shell
-export BAMBOO_VERSION=7.1.1
-```
-
 ### Download Files
 ```shell
+export BAMBOO_VERSION=7.1.4
 wget https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz
 ```
 
 ### Build Command
 ```shell
+export BAMBOO_VERSION=7.1.4
 docker build \
-    -t ${REGISTRY}/atlassian-suite/bamboo-server-sso:7.1.1 \
+    -t ${REGISTRY}/atlassian-suite/bamboo-server-sso:${BAMBOO_VERSION} \
     --build-arg BASE_REGISTRY=${REGISTRY} \
-    --build-arg BAMBOO_VERSION=7.1.1 \
+    --build-arg BAMBOO_VERSION=${BAMBOO_VERSION} \
     .
 ```
 
@@ -24,11 +21,12 @@ docker push ${REGISTRY}/atlassian-suite/bamboo-server-sso
 
 ### Simple Run Command
 ```shell
+export BAMBOO_VERSION=7.1.4
 docker run --init -it --rm \
     --name bamboo  \
     -v bamboo-data:/var/atlassian/application-data/bamboo \
     -p 8085:8085 \
-    ${REGISTRY}/atlassian-suite/bamboo-server-sso:7.1.1
+    ${REGISTRY}/atlassian-suite/bamboo-server-sso:${BAMBOO_VERSION}
 ```
 
 ### SSO Run Command
