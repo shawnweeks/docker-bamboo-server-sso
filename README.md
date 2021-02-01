@@ -29,6 +29,27 @@ docker run --init -it --rm \
     ${REGISTRY}/atlassian-suite/bamboo-server-sso:${BAMBOO_VERSION}
 ```
 
+### Simple SSL Run Command
+```shell
+export CONFLUENCE_VERSION=7.7.3
+keytool -genkey -noprompt -keyalg RSA \
+        -alias selfsigned -keystore keystore.jks -storepass changeit \
+        -dname "CN=localhost" \
+        -validity 360 -keysize 2048
+docker run --init -it --rm \
+    --name bamboo  \
+    -v bamboo-data:/var/atlassian/application-data/bamboo \
+    -v $PWD/keystore.jks:/tmp/keystore.jks \
+    -e ATL_TOMCAT_SCHEME=https \
+    -e ATL_TOMCAT_SECURE=true \
+    -e ATL_TOMCAT_SSL_ENABLED=true \
+    -e ATL_TOMCAT_KEY_ALIAS=selfsigned \
+    -e ATL_TOMCAT_KEYSTORE_FILE=/tmp/keystore.jks \
+    -e ATL_TOMCAT_KEYSTORE_PASS=changeit \
+    -p 8085:8085 \
+    ${REGISTRY}/atlassian-suite/bamboo-server-sso:${BAMBOO_VERSION}
+```
+
 ### SSO Run Command
 ```shell
 # Run first and setup Crowd Directory
@@ -68,13 +89,22 @@ docker run --init -it --rm \
 | ATL_TOMCAT_SCHEME | The protocol via which Bamboo is accessed | http |
 | ATL_TOMCAT_SECURE | Set to true if `ATL_TOMCAT_SCHEME` is 'https' | false |
 | ATL_TOMCAT_CONTEXTPATH | The context path the application is served over | None |
-| ATL_PROXY_NAME | The reverse proxys full URL for Bamboo | None |
-| ATL_PROXY_PORT | The reverse proxy's port number | None |
-| CUSTOM_SSO_LOGIN_URL | Login URL for Custom SSO Support | None |
-| CROWD_SSO_ENABLED | Enable Crowd SSO Support |
-| CROWD_APP_NAME | Crowd Application Name, Required if for Crowd SSO. | None |
-| CROWD_APP_PASS | Crowd Application Password, Required if for Crowd SSO. | None |
-| CROWD_BASE_URL | Crowd's Base URL | None |
+| ATL_TOMCAT_PROXY_NAME | The reverse proxys full URL for Bamboo | None |
+| ATL_TOMCAT_PROXY_PORT | The reverse proxy's port number | None |
+| ATL_TOMCAT_SSL_ENABLED | Enable Tomcat SSL Support | None |
+| ATL_TOMCAT_SSL_ENABLED_PROTOCOLS | Allowed SSL Protocols | TLSv1.2,TLSv1.3 |
+| ATL_TOMCAT_KEY_ALIAS | Tomcat SSL Key Alias | None |
+| ATL_TOMCAT_KEYSTORE_FILE | Tomcat SSL Keystore File | None |
+| ATL_TOMCAT_KEYSTORE_PASS | Tomcat SSL Keystore Password | None |
+| ATL_TOMCAT_KEYSTORE_TYPE | Tomcat SSL Keystore Type | JKS |
+| ATL_SSO_LOGIN_URL | Login URL for Custom SSO Support | None |
+| ATL_CROWD_SSO_ENABLED | Enable Crowd SSO Support |
+| ATL_CROWD_APP_NAME | Crowd Application Name, Required if for Crowd SSO. | None |
+| ATL_CROWD_APP_PASS | Crowd Application Password, Required if for Crowd SSO. | None |
+| ATL_CROWD_BASE_URL | Crowd's Base URL | None |
+| ATL_JAVA_ARGS | Support recomended Java Arguments | None |
+| ATL_MIN_MEMORY | Set's Java XMS | None |
+| ATL_MAX_MEMORY | Set's Java XMX | None |
 
 ### Additional
 #### Auto-login

@@ -7,22 +7,23 @@ umask 0027
 # Only affects the installation phase. Has no effect once Bamboo is set up.
 CATALINA_OPTS="${CATALINA_OPTS} -Dbamboo.setup.rss.in.docker=false"
 
-: ${JAVA_OPTS:=}
-: ${CATALINA_OPTS:=}
-
-export JAVA_OPTS="${JAVA_OPTS}"
-export CATALINA_OPTS="${CATALINA_OPTS}"
-
-shutdownCleanup() {
-    # Currently it looks like Bamboo doesn't lock it's home
-    # directory but I'm leaving this in here anyway.
-    if [[ -f ${HOME}/.lock ]]
-    then
-        echo "Cleaning Up Bamboo Lock"
-        rm ${HOME}/.lock
-    fi
-}
+export JVM_SUPPORT_RECOMMENDED_ARGS=${ATL_JAVA_ARGS}
+export JVM_MINIMUM_MEMORY=${ATL_MIN_MEMORY}
+export JVM_MAXIMUM_MEMORY=${ATL_MAX_MEMORY}
 
 entrypoint.py
-trap "shutdownCleanup" INT
-${BAMBOO_INSTALL_DIR}/bin/start-bamboo.sh -fg
+
+unset "${!ATL_@}"
+
+set +e
+flock -x -w 30 ${HOME}/.flock ${BAMBOO_INSTALL_DIR}/bin/start-bamboo.sh -fg &
+BAMBOO_PID="$!"
+
+echo "Bamboo Started with PID ${BAMBOO_PID}"
+wait ${BAMBOO_PID}
+
+if [[ $? -eq 1 ]]
+then
+    echo "Bamboo Failed to Aquire Lock! Exiting"
+    exit 1
+fi

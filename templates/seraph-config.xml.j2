@@ -54,7 +54,7 @@
 
     <!-- Determines what roles (permissions) a user has. -->
     <rolemapper class="com.atlassian.bamboo.user.authentication.BambooRoleMapper"/>
-    {% if CROWD_SSO_ENABLED is not defined or CROWD_SSO_ENABLED == 'false' %}
+    {% if ATL_CROWD_SSO_ENABLED is not defined or ATL_CROWD_SSO_ENABLED == 'false' %}
     <authenticator class="com.atlassian.bamboo.user.authentication.BambooAuthenticator"/>
     {% endif %}    
     <controller class="com.atlassian.bamboo.user.authentication.BambooSecurityController"/>
@@ -65,7 +65,7 @@
          Crowd property changes at runtime. If you need to switch back to local users, revert the change and
          restart Bamboo again.
      -->
-    {% if CROWD_SSO_ENABLED is defined and CROWD_SSO_ENABLED == 'true' %}
+    {% if ATL_CROWD_SSO_ENABLED is defined and ATL_CROWD_SSO_ENABLED == 'true' %}
     <authenticator class="com.atlassian.crowd.integration.seraph.v25.BambooAuthenticator"/>
     {% endif %}
     <services>
