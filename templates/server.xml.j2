@@ -62,6 +62,7 @@
                 secure="{{ ATL_TOMCAT_SECURE | default('false') }}"
 
                 maxThreads="150" minSpareThreads="25"
+                maxConnections="{{ ATL_TOMCAT_MAX_CONNECTIONS | default('8192') }}"
                 connectionTimeout="20000"
                 disableUploadTimeout="true"
                 acceptCount="100"
@@ -137,9 +138,16 @@
                 </Context>
 
             </Host>
-
-            <Valve className="org.apache.catalina.valves.AccessLogValve" resolveHosts="false"
-                   pattern="%a %t &quot;%m %U%q %H&quot; %s %b %D &quot;%{Referer}i&quot; &quot;%{User-Agent}i&quot;"/>
+            
+            <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" />
+            <Valve className="org.apache.catalina.valves.RemoteIpValve" />
+            <Valve className="org.apache.catalina.valves.AccessLogValve" 
+                   resolveHosts="false"
+                   directory="{{ HOME }}/logs"
+                   prefix="access" suffix=".log"
+                   pattern="%a %t &quot;%m %U%q %H&quot; %s %b %D &quot;%{Referer}i&quot; &quot;%{User-Agent}i&quot;"
+                   requestAttributesEnabled="true" 
+                   renameOnRotate="true" />
 
             <!-- StuckThreadDetectionValve added below to print stack traces if a thread has been stuck for 60 seconds -->
             <Valve className="org.apache.catalina.valves.StuckThreadDetectionValve" threshold="60" />
