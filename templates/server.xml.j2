@@ -143,11 +143,10 @@
             <Valve className="org.apache.catalina.valves.RemoteIpValve" />
             <Valve className="org.apache.catalina.valves.AccessLogValve" 
                    resolveHosts="false"
-                   directory="{{ HOME }}/logs"
+                   directory="logs"
                    prefix="access" suffix=".log"
                    pattern="%a %t &quot;%m %U%q %H&quot; %s %b %D &quot;%{Referer}i&quot; &quot;%{User-Agent}i&quot;"
-                   requestAttributesEnabled="true" 
-                   renameOnRotate="true" />
+                   requestAttributesEnabled="true" />
 
             <!-- StuckThreadDetectionValve added below to print stack traces if a thread has been stuck for 60 seconds -->
             <Valve className="org.apache.catalina.valves.StuckThreadDetectionValve" threshold="60" />
