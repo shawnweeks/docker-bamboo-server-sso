@@ -32,13 +32,14 @@ ENV BAMBOO_GID 2005
 ENV BAMBOO_HOME /var/atlassian/application-data/bamboo
 ENV BAMBOO_INSTALL_DIR /opt/atlassian/bamboo
 
-RUN yum install -y java-1.8.0-openjdk-devel python2 python2-jinja2 && \
+RUN yum install -y java-1.8.0-openjdk-devel && \
     yum clean all && \    
-    mkdir -p ${BAMBOO_HOME} && \
-    mkdir -p ${BAMBOO_INSTALL_DIR} && \
+    mkdir -p ${BAMBOO_HOME}/{logs} && \
+    mkdir -p ${BAMBOO_INSTALL_DIR}/{logs} && \
     groupadd -r -g ${BAMBOO_GID} ${BAMBOO_GROUP} && \
     useradd -r -u ${BAMBOO_UID} -g ${BAMBOO_GROUP} -M -d ${BAMBOO_HOME} ${BAMBOO_USER} && \
-    chown ${BAMBOO_USER}:${BAMBOO_GROUP} ${BAMBOO_HOME}
+    chown ${BAMBOO_USER}:${BAMBOO_GROUP} ${BAMBOO_INSTALL_DIR} -R && \
+    chown ${BAMBOO_USER}:${BAMBOO_GROUP} ${BAMBOO_HOME} -R
 
 COPY [ "templates/*.j2", "/opt/jinja-templates/" ]
 COPY --from=build --chown=${BAMBOO_USER}:${BAMBOO_GROUP} [ "/tmp/atl_pkg", "${BAMBOO_INSTALL_DIR}/" ]
