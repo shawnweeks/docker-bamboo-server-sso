@@ -32,7 +32,7 @@ ENV BAMBOO_GID 2005
 ENV BAMBOO_HOME /var/atlassian/application-data/bamboo
 ENV BAMBOO_INSTALL_DIR /opt/atlassian/bamboo
 
-RUN yum install -y java-1.8.0-openjdk-devel && \
+RUN yum install -y git java-1.8.0-openjdk-devel && \
     yum clean all && \    
     mkdir -p ${BAMBOO_HOME}/{logs} && \
     mkdir -p ${BAMBOO_INSTALL_DIR}/{logs} && \

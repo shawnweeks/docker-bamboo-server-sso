@@ -50,7 +50,7 @@
                 protocol="HTTP/1.1"
 
                 SSLEnabled="{{ ATL_TOMCAT_SSL_ENABLED | default('false') }}"
-                sslEnabledProtocols="{{ ATL_TOMCAT_SSL_ENABLED_PROTOCOLS | default ('TLSv1.2,TLSv1.3') }}"
+                sslEnabledProtocols="{{ ATL_TOMCAT_SSL_ENABLED_PROTOCOLS | default ('TLSv1.2') }}"
                 keyAlias="{{ ATL_TOMCAT_KEY_ALIAS | default('') }}"
                 keystoreFile="{{ ATL_TOMCAT_KEYSTORE_FILE | default('') }}"
                 keystorePass="{{ ATL_TOMCAT_KEYSTORE_PASS | default('') }}"

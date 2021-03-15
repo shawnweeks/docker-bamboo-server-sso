@@ -1,12 +1,11 @@
 ### Download Files
 ```shell
-export BAMBOO_VERSION=7.1.4
+export BAMBOO_VERSION=7.2.3
 wget https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz
 ```
 
 ### Build Command
 ```shell
-export BAMBOO_VERSION=7.1.4
 docker build \
     -t ${REGISTRY}/atlassian-suite/bamboo-server-sso:${BAMBOO_VERSION} \
     --build-arg BASE_REGISTRY=${REGISTRY} \
@@ -21,7 +20,6 @@ docker push ${REGISTRY}/atlassian-suite/bamboo-server-sso
 
 ### Simple Run Command
 ```shell
-export BAMBOO_VERSION=7.1.4
 docker run --init -it --rm \
     --name bamboo  \
     -v bamboo-data:/var/atlassian/application-data/bamboo \
@@ -31,7 +29,6 @@ docker run --init -it --rm \
 
 ### Simple SSL Run Command
 ```shell
-export CONFLUENCE_VERSION=7.7.3
 keytool -genkey -noprompt -keyalg RSA \
         -alias selfsigned -keystore keystore.jks -storepass changeit \
         -dname "CN=localhost" \
